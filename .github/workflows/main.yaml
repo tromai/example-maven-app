@@ -31,11 +31,10 @@ jobs:
 
     - name: Install Witness
       run: |
-        curl https://raw.githubusercontent.com/in-toto/witness/main/install-witness.sh > install-witness.sh || chmod +x install-witness.sh
-        mkdir witness_install
-        ./install-witness.sh witness_install
+        wget https://github.com/in-toto/witness/releases/download/v0.3.1/witness_0.3.1_linux_amd64.tar.gz
+        tar -xf witness_0.3.1_linux_amd64.tar.gz
         openssl genpkey -algorithm ed25519 -outform PEM -out testkey.pem
         openssl pkey -in testkey.pem -pubout > testpub.pem
 
     - name: Build
-      run: ./witness_install/witness run --step build -o test-att.json -a git -a maven ./mvnw clean package
+      run: ./witness run --step build -o test-att.json --attestor-product-include-glob target/* -a git -a maven ./mvnw clean package
