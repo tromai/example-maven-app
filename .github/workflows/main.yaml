@@ -37,9 +37,10 @@ jobs:
         openssl pkey -in testkey.pem -pubout > testpub.pem
 
     - name: Build
-      run: ./witness run --step build -o test-att.json --attestor-product-include-glob target/* -a git -a maven ./mvnw clean package
+      run: ./witness run --step build -o test-att.json --attestor-product-include-glob target/* -a github -a git -a maven ./mvnw clean package
 
     - name: upload
       uses: actions/upload-artifact@c7d193f32edcb7bfad88892161225aeda64e9392 # v4.0.0
       with:
+        name: test-att.json
         path: test-att.json
