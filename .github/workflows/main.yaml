@@ -1,5 +1,6 @@
 name: Build
 on:
+  workflow_dispatch:
   push:
   pull_request:
 permissions:
@@ -11,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java_version: ['8', '11', '17']
+        java_version: ['17']
         os: [ubuntu-latest]
     steps:
 
@@ -28,5 +29,13 @@ jobs:
         java-version: ${{ matrix.java_version }}
         cache: maven
 
+    - name: Install Witness
+      run: |
+        curl https://raw.githubusercontent.com/in-toto/witness/main/install-witness.sh > install-witness.sh || chmod +x install-witness.sh
+        mkdir witness_install
+        ./install-witness.sh witness_install
+        openssl genpkey -algorithm ed25519 -outform PEM -out testkey.pem
+        openssl pkey -in testkey.pem -pubout > testpub.pem
+
     - name: Build
-      run: ./mvnw clean package
+      run: ./witness_install/witness run --step build -o test-att.json -a git -a maven ./mvnw clean package
